@@ -1,0 +1,61 @@
+name: Deploy to AKS
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  REGISTRY: clementaksterraform.azurecr.io
+  IMAGE_NAME: aks-platform
+  RESOURCE_GROUP: rg-aks-terraform
+  AKS_CLUSTER: aks-terraform-platform
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set AKS context
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          cluster-name: ${{ env.AKS_CLUSTER }}
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install aks-platform ./helm/aks-platform \
+            --namespace aks-platform \
+            --create-namespace \
+            --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${{ github.event.workflow_run.head_sha }} \
+            --set image.pullPolicy=Always
+
+      - name: Check deployment
+        run: |
+          kubectl rollout status deployment/aks-platform \
+            -n aks-platform \
+            --timeout=180s
+
+      - name: Show pods
+        run: |
+          kubectl get pods -n aks-platform

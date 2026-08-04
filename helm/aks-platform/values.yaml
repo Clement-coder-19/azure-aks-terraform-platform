@@ -6,7 +6,7 @@ image:
   pullPolicy: Always
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 80
   targetPort: 8080
 
@@ -17,3 +17,8 @@ resources:
   limits:
     cpu: 250m
     memory: 256Mi
+
+ingress:
+  enabled: true
+  className: nginx
+  host: aks-platform.local
