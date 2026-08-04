@@ -14,6 +14,8 @@ spec:
       labels:
         app: {{ .Release.Name }}
     spec:
+      serviceAccountName: {{ .Release.Name }}
+      automountServiceAccountToken: false
       containers:
         - name: aks-platform
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

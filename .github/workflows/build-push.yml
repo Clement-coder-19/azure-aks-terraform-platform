@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build, Push and Deploy
 
 on:
   push:
@@ -12,11 +12,14 @@ permissions:
 env:
   REGISTRY: clementaksterraform.azurecr.io
   IMAGE_NAME: aks-platform
+  RESOURCE_GROUP: rg-aks-terraform
+  AKS_CLUSTER: aks-terraform-platform
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     environment: build
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,3 +46,31 @@ jobs:
         run: |
           docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
           docker push $REGISTRY/$IMAGE_NAME:latest
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials \
+            --resource-group $RESOURCE_GROUP \
+            --name $AKS_CLUSTER \
+            --overwrite-existing
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install aks-platform ./helm/aks-platform \
+            --namespace aks-platform \
+            --create-namespace \
+            --set image.repository=$REGISTRY/$IMAGE_NAME \
+            --set image.tag=${{ github.sha }} \
+            --set image.pullPolicy=Always
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status \
+            deployment/aks-platform \
+            --namespace aks-platform \
+            --timeout=180s
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n aks-platform
+          kubectl get ingress -n aks-platform
