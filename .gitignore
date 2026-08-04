@@ -1,12 +1,20 @@
-# Terraform
-terraform/.terraform/
-terraform/*.tfstate
-terraform/*.tfstate.*
-terraform/crash.log
-terraform/crash.*.log
-terraform/*.tfvars
-terraform/*.tfvars.json
+# Terraform working directory
+**/.terraform/
 
+# Terraform state
+**/*.tfstate
+**/*.tfstate.*
+
+# Terraform crash logs
+**/crash.log
+**/crash.*.log
+
+# Terraform variables / secrets
+**/*.tfvars
+**/*.tfvars.json
+
+# Terraform local backups
+**/terraform-state-backup.json
 # Python
 __pycache__/
 *.py[cod]
