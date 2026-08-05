@@ -1199,8 +1199,23 @@ Les captures sont stockées dans :
 
 ```text
 docs/screenshots/
+
 ```
-# 26. License
+---
+# 26. Gestion des ressources Azure
+
+Après la réalisation et la validation du projet, les ressources Azure utilisées pour les tests ont été supprimées afin d'éviter toute consommation inutile de crédits.
+
+Le code Terraform permet néanmoins de reproduire l'infrastructure ultérieurement avec :
+
+```powershell
+terraform init
+terraform plan
+terraform apply
+```
+---
+
+# 27. License
 
 Ce projet est distribué sous licence MIT.
 
