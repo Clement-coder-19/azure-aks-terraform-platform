@@ -1205,6 +1205,13 @@ docs/screenshots/
 # 26. Gestion des ressources Azure
 
 Après la réalisation et la validation du projet, les ressources Azure utilisées pour les tests ont été supprimées afin d'éviter toute consommation inutile de crédits.
+Avant leur suppression, l'infrastructure était bien déployée dans le Resource Group rg-aks-terraform.
+
+**`RessourceGroup.png`**
+
+![RessourceGroup](screenshots/RessourceGroup.png)
+
+Cette capture montre les ressources Azure utilisées par la plateforme avant leur destruction.
 
 Le code Terraform permet néanmoins de reproduire l'infrastructure ultérieurement avec :
 
@@ -1213,6 +1220,7 @@ terraform init
 terraform plan
 terraform apply
 ```
+
 ---
 
 # 27. License
