@@ -237,7 +237,7 @@ az resource list `
 Cette commande permet de vérifier rapidement les ressources Azure créées par Terraform.
 
 
-**`ResourceGroup.png`**
+**`screenshots/ResourceGroup.png`**
 
 
 
@@ -319,7 +319,7 @@ clementaksterraform.azurecr.io/aks-platform:latest
 ```
 
 
-**`ACR.png`**
+**`screenshots/ACR.png`**
 
 
 ---
@@ -376,9 +376,9 @@ Vérifier le release :
 helm list -n aks-platform
 ```
 
-**`Helm.png`**
+**`screenshots/Helm.png`**
 
-**`HelmStatus.png`**
+**`screenshots/HelmStatus.png`**
 
 
 ---
@@ -391,28 +391,28 @@ Vérifier le Deployment :
 ```powershell
 kubectl get deployment -n aks-platform
 ```
-**`DeploymentGet.png`**
+**`screenshots/DeploymentGet.png`**
 
 Vérifier les Pods :
 
 ```powershell
 kubectl get pods -n aks-platform
 ```
-**`Pods.png`**
+**`screenshots/Pods.png`**
 
 Vérifier le Service :
 
 ```powershell
 kubectl get service -n aks-platform
 ```
-**`Service.png`**
+**`screenshots/Service.png`**
 
 Lister les ressources :
 
 ```powershell
 kubectl get all -n aks-platform
 ```
-**`KubernetesRessources.png`**
+**`screenshots/KubernetesRessources.png`**
 
 ---
 
@@ -447,7 +447,7 @@ kubectl describe deployment aks-platform -n aks-platform
 ```
 
 
-**`Deployment.png`**
+**`screenshots/Deployment.png`**
 
 ---
 
@@ -470,7 +470,7 @@ kubectl describe networkpolicy aks-platform -n aks-platform
 Cette vérification permet de confirmer que la politique réseau a bien été créée dans le namespace `aks-platform`.
 
 
-**`NetworkPolicy.png`**
+**`screenshots/NetworkPolicy.png`**
 
 
 ---
