@@ -17,3 +17,14 @@ output "vnet_id" {
 output "aks_subnet_id" {
   value = module.networking.subnet_id
 }
+output "workload_identity_client_id" {
+  value = module.aks.workload_identity_client_id
+}
+
+output "workload_identity_principal_id" {
+  value = module.aks.workload_identity_principal_id
+}
+
+output "oidc_issuer_url" {
+  value = module.aks.oidc_issuer_url
+}

@@ -61,3 +61,7 @@ variable "min_count" {
 variable "max_count" {
   type = number
 }
+variable "key_vault_name" {
+  description = "Name of the Azure Key Vault"
+  type        = string
+}

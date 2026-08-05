@@ -28,3 +28,8 @@ autoscaling:
   minReplicas: 1
   maxReplicas: 3
   targetCPU: 70
+
+workloadIdentity:
+  enabled: true
+  serviceAccountName: aks-platform-workload
+  clientId: ""

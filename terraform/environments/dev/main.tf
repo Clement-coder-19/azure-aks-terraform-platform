@@ -59,9 +59,29 @@ module "aks" {
   vm_size    = var.aks_vm_size
 
   auto_scaling_enabled = var.auto_scaling_enabled
-  min_count             = var.min_count
-  max_count             = var.max_count
+  min_count            = var.min_count
+  max_count            = var.max_count
 
-  environment = var.environment
-  project     = var.project
+  environment               = var.environment
+  project                   = var.project
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
+}
+
+data "azurerm_client_config" "current" {}
+
+module "keyvault" {
+  source = "../../modules/keyvault"
+
+  name                = var.key_vault_name
+  location            = var.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+
+  workload_identity_principal_id = module.aks.workload_identity_principal_id
+
+  tags = {
+    Environment = var.environment
+    Project     = var.project
+  }
 }

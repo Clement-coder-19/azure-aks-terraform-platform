@@ -1,132 +1,89 @@
-# 🚀 Azure AKS Terraform Platform
+# Azure AKS Terraform Platform
 
-> Plateforme Cloud complète déployée sur Microsoft Azure avec Terraform, AKS, Docker, ACR, Kubernetes, Helm, NGINX Ingress, cert-manager, GitHub Actions, HPA, Prometheus et Grafana.
+Infrastructure Cloud sur Microsoft Azure déployée avec **Terraform**, puis utilisée avec **Kubernetes** et **Helm**.
 
-## 📌 Présentation
+L'objectif du projet est de construire une plateforme Cloud reproductible, en séparant l'infrastructure Azure, la configuration Kubernetes et le déploiement de l'application.
 
-Ce projet consiste à construire une plateforme Kubernetes complète sur **Microsoft Azure**, entièrement automatisée et reproductible avec **Terraform**.
+---
 
-L'objectif est de reproduire une architecture Cloud proche d'un environnement professionnel :
+# 1. Objectifs
+
+Ce projet m'a permis de mettre en pratique :
 
 * Infrastructure as Code avec Terraform
-* Cluster Kubernetes managé avec AKS
-* Registry privé avec Azure Container Registry
-* Application conteneurisée avec Docker
-* Déploiement Kubernetes avec Helm
-* Exposition HTTP avec NGINX Ingress Controller
-* Gestion des certificats avec cert-manager
-* CI/CD avec GitHub Actions
-* Autoscaling avec Kubernetes HPA
-* Monitoring avec Prometheus et Grafana
-* Réseau Azure avec Virtual Network et Subnet
-* Identité Azure avec Managed Identity et Service Principal pour GitHub Actions
-
-Le projet permet ainsi de couvrir l'ensemble du cycle :
-
-```text
-Code
-  ↓
-GitHub
-  ↓
-GitHub Actions
-  ↓
-Docker Build
-  ↓
-Azure Container Registry
-  ↓
-Helm
-  ↓
-AKS
-  ↓
-NGINX Ingress
-  ↓
-Application
-  ↓
-Prometheus
-  ↓
-Grafana
-```
+* Azure Kubernetes Service (AKS)
+* Architecture Terraform modulaire
+* Gestion de plusieurs environnements
+* Remote Terraform State
+* Azure Container Registry (ACR)
+* Réseau Azure
+* Azure Key Vault
+* Azure RBAC
+* Azure Workload Identity
+* Kubernetes
+* Helm
+* HPA
+* Ingress
+* NetworkPolicy
+* Readiness/Liveness probes
+* Git/GitHub
+* Gestion des fichiers sensibles avec `.gitignore`
 
 ---
 
-# 🏗️ Architecture globale
+# 2. Architecture
 
 ```text
-                         ┌──────────────────────┐
-                         │       GitHub         │
-                         │                      │
-                         │ Application          │
-                         │ Terraform            │
-                         │ Helm                  │
-                         └──────────┬───────────┘
-                                    │
-                               git push
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │   GitHub Actions     │
-                         │                      │
-                         │ Checkout             │
-                         │ Azure Login           │
-                         │ Docker Build           │
-                         │ Docker Push            │
-                         │ Helm Deploy            │
-                         └──────────┬───────────┘
-                                    │
-                  ┌─────────────────┴─────────────────┐
-                  │                                   │
-                  ▼                                   ▼
-       ┌──────────────────────┐             ┌──────────────────────┐
-       │ Azure Container      │             │       Azure AKS      │
-       │ Registry (ACR)       │             │                      │
-       │                      │             │ Kubernetes Cluster   │
-       │ aks-platform image   │             │                      │
-       └──────────────────────┘             └──────────┬───────────┘
-                                                       │
-                              ┌────────────────────────┼─────────────────────┐
-                              │                        │                     │
-                              ▼                        ▼                     ▼
-                       ┌─────────────┐         ┌─────────────┐       ┌─────────────┐
-                       │ Deployment  │         │     HPA     │       │   Ingress   │
-                       │             │         │             │       │    NGINX    │
-                       │ Application │◄────────│ 1 → 3 Pods  │       │             │
-                       └──────┬──────┘         └─────────────┘       └──────┬──────┘
-                              │                                             │
-                              │                                             ▼
-                              │                                      HTTP traffic
-                              │
-                              ▼
-                       ┌─────────────┐
-                       │   Service   │
-                       │  ClusterIP  │
-                       └─────────────┘
-
-                              Monitoring
-                                  │
-                    ┌─────────────┴─────────────┐
-                    ▼                           ▼
-              ┌─────────────┐             ┌─────────────┐
-              │ Prometheus  │────────────►│   Grafana   │
-              │             │             │             │
-              │ Metrics     │             │ Dashboards  │
-              └─────────────┘             └─────────────┘
+                         PROJET AKS TERRAFORM PLATFORM
+                                      │
+                 ┌────────────────────┴────────────────────┐
+                 │                                         │
+             Terraform                                     Helm
+          Infrastructure                              Kubernetes Apps
+                 │                                         │
+                 ▼                                         ▼
+            Microsoft Azure                            AKS Cluster
+                 │                                         │
+        ┌────────┼────────┐                         ┌───────┼────────┐
+        │        │        │                         │       │        │
+       VNet     ACR   Key Vault                 Deployment Service Ingress
+        │                 ▲                         │
+        │                 │                         ▼
+        └──────► AKS ◄────┘                    Application
+                   │
+                   │ Workload Identity
+                   ▼
+             Azure Managed
+                Identity
+                   │
+                   ▼
+                Key Vault
 ```
+
+### 📸 Capture à ajouter ici
+
+**`01-architecture.png`**
+
+Une capture du schéma de l'architecture est idéale ici.
 
 ---
 
-# 📁 Structure du projet
+# 3. Structure du projet
 
 ```text
 azure-aks-terraform-platform/
 │
-├── .github/
-│   └── workflows/
-│       └── build-push.yaml
-│
-├── app/
-│   ├── Dockerfile
-│   ├── package.json
-│   └── ...
+├── terraform/
+│   ├── environments/
+│   │   ├── dev/
+│   │   ├── staging/
+│   │   └── production/
+│   │
+│   └── modules/
+│       ├── aks/
+│       ├── acr/
+│       ├── networking/
+│       └── keyvault/
 │
 ├── helm/
 │   └── aks-platform/
@@ -137,987 +94,1097 @@ azure-aks-terraform-platform/
 │           ├── service.yaml
 │           ├── ingress.yaml
 │           ├── hpa.yaml
-│           └── ...
+│           ├── network-policy.yaml
+│           └── serviceaccount.yaml
 │
-├── terraform/
-│   ├── main.tf
-│   └── .terraform.lock.hcl
+├── docs/
+│   └── screenshots/
 │
+├── .gitignore
 └── README.md
 ```
 
 ---
 
-# ☁️ Infrastructure Azure
+# 4. Prérequis
 
-L'infrastructure Azure est créée avec Terraform.
-
-## Ressources principales
-
-Terraform crée notamment :
-
-* Resource Group
-* Virtual Network
-* Subnet
-* Azure Container Registry
-* Azure Kubernetes Service
-
-La région utilisée pour le projet est :
-
-```text
-Poland Central
-```
-
-## Réseau
-
-Le Virtual Network utilise :
-
-```text
-10.0.0.0/16
-```
-
-avec un subnet AKS :
-
-```text
-10.0.1.0/24
-```
-
-Le réseau Kubernetes utilise également un CIDR dédié aux Services :
-
-```text
-10.1.0.0/16
-```
-
-et le DNS Kubernetes :
-
-```text
-10.1.0.10
-```
-
----
-
-# 🏗️ Terraform
-
-Terraform permet de définir toute l'infrastructure sous forme de code.
-
-Exemple :
-
-```hcl
-resource "azurerm_kubernetes_cluster" "main" {
-  name                = "aks-terraform-platform"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-
-  identity {
-    type = "SystemAssigned"
-  }
-
-  default_node_pool {
-    name           = "system"
-    node_count     = 1
-    vm_size        = "Standard_D2s_v3"
-    vnet_subnet_id = azurerm_subnet.aks.id
-  }
-}
-```
-
-Cela permet de recréer l'infrastructure sans avoir à configurer manuellement chaque ressource depuis Azure Portal.
-
-## Commandes principales
-
-```bash
-terraform init
-terraform validate
-terraform plan
-terraform apply
-```
-
-Pour détruire l'infrastructure :
-
-```bash
-terraform destroy
-```
-
----
-
-# 🐳 Docker
-
-L'application est conteneurisée avec Docker.
-
-L'image est construite avec :
-
-```text
-clementaksterraform.azurecr.io/aks-platform
-```
-
-Deux tags sont utilisés :
-
-```text
-latest
-```
-
-et surtout :
-
-```text
-<GitHub commit SHA>
-```
-
-L'utilisation du SHA permet d'identifier précisément quelle version du code est déployée.
-
----
-
-# 📦 Azure Container Registry
-
-L'image Docker est stockée dans Azure Container Registry.
-
-Le pipeline GitHub Actions effectue :
-
-```text
-Docker Build
-      ↓
-Azure Login
-      ↓
-ACR Login
-      ↓
-Docker Push
-```
-
-L'image est ensuite récupérée par AKS lors du déploiement.
-
-L'ACR utilise :
-
-```text
-admin_enabled = false
-```
-
-afin de ne pas utiliser un compte administrateur ACR avec username/password.
-
----
-
-# ☸️ Kubernetes / AKS
-
-Le cluster AKS possède un node pool système.
-
-Configuration actuelle :
-
-```text
-VM                Standard_D2s_v3
-Nodes             1
-Min replicas      1
-Max replicas      3
-```
-
-Le cluster utilise :
-
-```text
-Network plugin: Azure CNI
-```
-
----
-
-# ⎈ Helm
-
-Helm permet de transformer les manifests Kubernetes en chart configurable.
-
-Le chart contient notamment :
-
-```text
-Deployment
-Service
-Ingress
-HPA
-```
-
-Les paramètres sont centralisés dans :
-
-```text
-helm/aks-platform/values.yaml
-```
-
-Par exemple :
-
-```yaml
-replicaCount: 1
-
-service:
-  type: ClusterIP
-  port: 80
-  targetPort: 8080
-
-resources:
-  requests:
-    cpu: 100m
-    memory: 128Mi
-
-  limits:
-    cpu: 250m
-    memory: 256Mi
-```
-
-Cela permet de modifier la configuration sans réécrire les manifests Kubernetes.
-
----
-
-# 🌐 NGINX Ingress
-
-L'application est exposée via un **NGINX Ingress Controller**.
-
-Architecture :
-
-```text
-Internet
-   │
-   ▼
-Azure Load Balancer
-   │
-   ▼
-NGINX Ingress Controller
-   │
-   ▼
-Ingress
-   │
-   ▼
-Service
-   │
-   ▼
-Pod
-```
-
-L'Ingress utilise actuellement :
-
-```text
-aks-platform.local
-```
-
-Le host permet à NGINX de déterminer quelle application doit recevoir la requête.
-
----
-
-# 🔐 TLS avec cert-manager
-
-Le projet utilise **cert-manager** pour automatiser la gestion des certificats TLS.
-
-Un `ClusterIssuer` Let's Encrypt a été configuré.
-
-Le `ClusterIssuer` utilisé est :
-
-```text
-letsencrypt-prod
-```
-
-Cependant, un certificat Let's Encrypt public nécessite un **vrai domaine DNS contrôlé par l'utilisateur**.
-
-Le domaine local :
-
-```text
-aks-platform.local
-```
-
-ne peut donc pas être utilisé pour obtenir un certificat public Let's Encrypt.
-
-Cette partie est volontairement laissée comme extension future si un vrai domaine est ajouté.
-
----
-
-# 📈 Autoscaling avec HPA
-
-Le projet utilise le **Horizontal Pod Autoscaler**.
-
-L'objectif est d'adapter automatiquement le nombre de Pods à la charge CPU.
-
-Configuration :
-
-```text
-Minimum : 1 Pod
-Maximum : 3 Pods
-Target CPU : 70%
-```
-
-Architecture :
-
-```text
-             CPU < 70%
-                 │
-                 ▼
-              1 Pod
-
-
-             CPU > 70%
-                 │
-                 ▼
-            HPA scaling
-                 │
-                 ▼
-           2 → 3 Pods
-```
-
-Un test de charge a été réalisé afin de vérifier que Kubernetes pouvait effectivement augmenter le nombre de replicas.
-
-Après suppression de la charge, les replicas peuvent redescendre automatiquement.
-
----
-
-# 📊 Monitoring
-
-Le monitoring utilise :
-
-* Prometheus
-* Grafana
-* Alertmanager
-* Prometheus Operator
-* Node Exporter
-
-Le stack est déployé avec :
-
-```text
-kube-prometheus-stack
-```
-
-## Architecture
-
-```text
-Kubernetes
-     │
-     ├── Nodes
-     ├── Pods
-     ├── Deployments
-     └── HPA
-           │
-           ▼
-       Prometheus
-           │
-           ▼
-        Grafana
-```
-
-Grafana permet notamment de visualiser :
-
-* CPU
-* mémoire
-* nombre de Pods
-* redémarrages de conteneurs
-* replicas actuels du HPA
-* replicas désirés du HPA
-
-Cela permet de corréler la charge de l'application avec le comportement du HPA.
-
----
-
-# 🔄 CI/CD avec GitHub Actions
-
-Le pipeline CI/CD est déclenché lors d'un push sur `main`.
-
-Workflow :
-
-```text
-git push
-   │
-   ▼
-GitHub Actions
-   │
-   ├── Checkout
-   │
-   ├── Azure Login
-   │
-   ├── ACR Login
-   │
-   ├── Docker Build
-   │
-   ├── Docker Push
-   │
-   ├── AKS credentials
-   │
-   └── Helm deployment
-          │
-          ▼
-         AKS
-```
-
-Le pipeline utilise une authentification Azure basée sur une identité dédiée à GitHub Actions.
-
-Les credentials Azure ne sont pas stockés directement dans le repository.
-
-Les valeurs sensibles sont stockées dans :
-
-```text
-GitHub Secrets
-```
-
----
-
-# 🔑 Sécurité GitHub Actions
-
-GitHub Actions utilise notamment :
-
-```text
-AZURE_CLIENT_ID
-AZURE_TENANT_ID
-AZURE_SUBSCRIPTION_ID
-```
-
-Ces valeurs permettent à GitHub Actions de s'authentifier auprès d'Azure.
-
-L'identité utilisée par GitHub Actions possède uniquement les permissions nécessaires au fonctionnement du pipeline.
-
-Un problème de permissions a notamment été rencontré avec :
-
-```text
-Microsoft.ContainerService/managedClusters/listClusterUserCredential/action
-```
-
-Le pipeline ne pouvait pas récupérer les credentials AKS.
-
-La résolution a consisté à identifier **l'Object ID réellement utilisé par GitHub Actions** puis à lui attribuer le rôle :
-
-```text
-Azure Kubernetes Service Cluster User Role
-```
-
-sur le cluster AKS.
-
----
-
-# 🧩 Problèmes rencontrés et solutions
-
-Cette section est particulièrement importante car elle montre les compétences de troubleshooting développées pendant le projet.
-
-## 1. Terraform refusait certains paramètres AKS
-
-Une première configuration utilisait :
-
-```text
-enable_auto_scaling
-```
-
-Terraform retournait :
-
-```text
-Unsupported argument
-```
-
-La configuration a été adaptée à la version du provider AzureRM utilisée.
-
-Le paramètre approprié dans la configuration finale est :
-
-```text
-auto_scaling_enabled
-```
-
-Cette erreur a permis de prendre en compte la différence entre la documentation/version du provider et la configuration réellement supportée.
-
----
-
-## 2. Terraform refusait `default_node_pool`
-
-Une autre erreur indiquait :
-
-```text
-Unsupported block type
-default_node_pool
-```
-
-Le problème venait de la structure du bloc Terraform après modification du fichier.
-
-La structure du resource `azurerm_kubernetes_cluster` a été corrigée.
-
-Finalement :
-
-```bash
-terraform validate
-```
-
-et :
-
-```bash
-terraform plan
-```
-
-fonctionnaient correctement.
-
-Le résultat final :
-
-```text
-No changes.
-Your infrastructure matches the configuration.
-```
-
----
-
-## 3. Service Kubernetes et Ingress
-
-Au début, le Service de l'application était de type :
-
-```text
-LoadBalancer
-```
-
-Puis l'architecture a été améliorée pour utiliser :
-
-```text
-Service → ClusterIP
-```
-
-avec :
-
-```text
-NGINX Ingress → LoadBalancer
-```
-
-Cette architecture est plus cohérente lorsqu'un Ingress Controller est utilisé.
-
----
-
-## 4. Endpoint Kubernetes inaccessible depuis l'extérieur
-
-Une requête vers :
-
-```text
-20.215.140.11
-```
-
-depuis la machine locale retournait :
-
-```text
-Connection timed out
-```
-
-alors que la même application répondait correctement depuis le cluster :
-
-```text
-HTTP/1.1 200 OK
-
-{"status":"healthy"}
-```
-
-Cela a permis de déterminer que :
-
-```text
-Application       ✅
-Service           ✅
-Ingress            ✅
-NGINX              ✅
-```
-
-étaient fonctionnels à l'intérieur du cluster.
-
-Le problème concernait l'accès réseau externe au Load Balancer Azure, et non l'application elle-même.
-
-Cette distinction est importante dans Kubernetes : un endpoint interne fonctionnel ne garantit pas qu'il soit accessible depuis Internet.
-
----
-
-## 5. Service DNS non résolu
-
-Un test avec :
-
-```bash
-kubectl run curl-test
-```
-
-a initialement été effectué dans le namespace `default`.
-
-La commande essayait donc d'accéder à :
-
-```text
-http://aks-platform
-```
-
-mais le Service existait dans :
-
-```text
-aks-platform
-```
-
-Le DNS Kubernetes dépend notamment du namespace.
-
-La résolution correcte peut être faite avec :
-
-```text
-aks-platform.aks-platform.svc.cluster.local
-```
-
-ou en exécutant le Pod de test directement dans le namespace concerné.
-
----
-
-## 6. GitHub Actions n'avait pas les permissions AKS
-
-Le pipeline échouait sur :
-
-```text
-az aks get-credentials
-```
-
-avec :
-
-```text
-AuthorizationFailed
-```
-
-Le problème était particulièrement intéressant : l'identité à laquelle un rôle avait été attribué n'était pas celle réellement utilisée par GitHub Actions.
-
-Deux Object IDs différents avaient été identifiés.
-
-Le véritable Object ID utilisé par GitHub Actions a finalement reçu :
-
-```text
-Azure Kubernetes Service Cluster User Role
-```
-
-Le pipeline a ensuite pu récupérer les credentials AKS et poursuivre son déploiement.
-
----
-
-## 7. Grafana affichait trop de Pods
-
-Une requête initiale utilisait :
-
-```promql
-count(
-  kube_pod_info{
-    namespace="aks-platform"
-  }
-)
-```
-
-Cette requête comptait tous les Pods du namespace.
-
-Elle pouvait donc afficher un nombre supérieur au nombre de replicas du Deployment.
-
-La requête a été affinée pour sélectionner uniquement les Pods de l'application :
-
-```promql
-count(
-  kube_pod_info{
-    namespace="aks-platform",
-    pod=~"aks-platform-.*"
-  }
-)
-```
-
-Cela montre l'importance de construire des requêtes PromQL précises.
-
----
-
-# 🔐 Gestion des secrets
-
-Aucun secret Azure sensible n'est volontairement stocké dans le repository.
-
-Les informations utilisées par GitHub Actions sont stockées dans :
-
-```text
-GitHub Secrets
-```
-
-Le repository contient uniquement les références :
-
-```yaml
-${{ secrets.AZURE_CLIENT_ID }}
-${{ secrets.AZURE_TENANT_ID }}
-${{ secrets.AZURE_SUBSCRIPTION_ID }}
-```
-
-Les secrets réels ne sont donc pas présents dans le code source.
-
----
-
-# 🧪 Tests réalisés
-
-Plusieurs niveaux de tests ont été effectués.
-
-## Application
-
-```bash
-curl /health
-```
-
-Résultat :
-
-```json
-{
-  "status": "healthy"
-}
-```
-
-## Kubernetes
-
-```bash
-kubectl get pods
-kubectl get svc
-kubectl get ingress
-kubectl get endpoints
-```
-
-## Helm
-
-```bash
-helm lint
-helm template
-helm list -A
-```
-
-## Terraform
-
-```bash
-terraform validate
-terraform plan
-```
-
-Résultat final :
-
-```text
-No changes.
-Your infrastructure matches the configuration.
-```
-
-## HPA
-
-Le comportement de l'HPA a été testé avec une charge artificielle.
-
-## Monitoring
-
-Prometheus et Grafana ont été vérifiés avec :
-
-```bash
-kubectl get pods -A
-kubectl get svc -A
-```
-
----
-
-# 🚀 Déploiement du projet
-
-## Prérequis
-
-Installer :
+Avant de commencer, il faut installer :
 
 * Azure CLI
 * Terraform
 * kubectl
 * Helm
-* Docker
 * Git
 
-Être connecté à Azure :
+Vérifier les installations :
 
-```bash
+```powershell
+az version
+terraform version
+kubectl version --client
+helm version
+git --version
+```
+
+Il faut également être connecté à Azure :
+
+```powershell
 az login
+```
+
+Puis vérifier la souscription utilisée :
+
+```powershell
+az account show
+```
+
+Si plusieurs souscriptions sont disponibles :
+
+```powershell
+az account list -o table
+```
+
+Puis sélectionner la bonne :
+
+```powershell
+az account set --subscription "<SUBSCRIPTION_ID>"
 ```
 
 ---
 
-## Déployer l'infrastructure
+# 5. Déployer l'infrastructure Terraform
 
-```bash
-cd terraform
+Le projet est organisé par environnement.
 
+En premier lieu, il faut travailler sur `dev` :
+
+```powershell
+cd terraform/environments/dev
+```
+
+## Initialiser Terraform
+
+```powershell
 terraform init
+```
+
+Cette commande initialise :
+
+* le provider AzureRM ;
+* le backend Terraform ;
+* les modules ;
+* les dépendances nécessaires.
+
+---
+
+## Vérifier la configuration
+
+```powershell
 terraform validate
+```
+
+Résultat attendu :
+
+```text
+Success! The configuration is valid.
+```
+**`screenshots/TerraformValidate.png`**
+
+Cette capture montre que la configuration Terraform est valide avant de poursuivre le déploiement.
+---
+
+## Prévisualiser les changements
+
+```powershell
 terraform plan
+```
+
+Cette commande permet de vérifier ce que Terraform va créer, modifier ou supprimer **avant de modifier Azure**.
+
+Lorsque l'infrastructure est déjà complètement déployée, le résultat attendu est :
+
+```text
+No changes. Your infrastructure matches the configuration.
+```
+
+**`screenshots/TerraformPlan.png`**
+
+---
+
+## Déployer
+
+Pour créer ou modifier réellement l'infrastructure :
+
+```powershell
+terraform apply
+```
+
+Puis confirmer avec :
+
+```text
+yes
+```
+## Vérifier les ressources Azure
+
+Le Resource Group permet de regrouper les différentes ressources utilisées par la plateforme.
+
+```powershell
+az resource list `
+  --resource-group rg-aks-terraform `
+  -o table
+```
+
+Cette commande permet de vérifier rapidement les ressources Azure créées par Terraform.
+
+
+**`ResourceGroup.png`**
+
+
+
+---
+
+# 6. Vérifier les outputs Terraform
+
+Une fois Terraform appliqué :
+
+```powershell
+terraform output
+```
+
+Pour récupérer une valeur précise :
+
+```powershell
+terraform output -raw workload_identity_client_id
+```
+
+Cette valeur est notamment utilisée pour configurer l'identité Azure utilisée par Kubernetes.
+
+---
+
+# 7. Récupérer les credentials AKS
+
+Après la création du cluster :
+
+```powershell
+az aks get-credentials `
+  --resource-group rg-aks-terraform `
+  --name aks-terraform-platform `
+  --overwrite-existing
+```
+
+Vérifier la connexion :
+
+```powershell
+kubectl get nodes
+```
+**`screenshots/Nodes.png`**
+
+
+Puis :
+
+```powershell
+kubectl get pods -A
+```
+
+**`screenshots/Pods.png`**
+
+Cette capture permet de montrer les Pods présents dans le cluster Kubernetes après la connexion à AKS.
+
+---
+
+# 8. Vérifier Azure Container Registry
+
+Le projet utilise un ACR pour stocker l'image Docker de l'application.
+
+Vérifier le registre :
+
+```powershell
+az acr show `
+  --name clementaksterraform `
+  --resource-group rg-aks-terraform
+```
+
+Lister les repositories :
+
+```powershell
+az acr repository list `
+  --name clementaksterraform `
+  -o table
+```
+
+L'image utilisée par Helm est :
+
+```text
+clementaksterraform.azurecr.io/aks-platform:latest
+```
+
+
+**`ACR.png`**
+
+
+---
+
+# 9. Déployer l'application avec Helm
+
+Se placer dans le chart :
+
+```powershell
+cd helm/aks-platform
+```
+
+Avant l'installation, vérifier que Helm détecte correctement le chart :
+
+```powershell
+helm lint .
+```
+
+Puis afficher les manifests générés :
+
+```powershell
+helm template aks-platform .
+```
+
+Cette commande est très utile pour comprendre comment les fichiers de templates Helm deviennent des manifests Kubernetes.
+
+---
+
+## Installer l'application
+
+Créer le namespace :
+
+```powershell
+kubectl create namespace aks-platform
+```
+
+Puis installer le chart :
+
+```powershell
+helm install aks-platform . `
+  --namespace aks-platform
+```
+
+Si le release existe déjà, utiliser :
+
+```powershell
+helm upgrade aks-platform . `
+  --namespace aks-platform
+```
+
+Vérifier le release :
+
+```powershell
+helm list -n aks-platform
+```
+
+**`Helm.png`**
+
+**`HelmStatus.png`**
+
+
+---
+
+# 10. Vérifier Kubernetes
+
+
+Vérifier le Deployment :
+
+```powershell
+kubectl get deployment -n aks-platform
+```
+**`DeploymentGet.png`**
+
+Vérifier les Pods :
+
+```powershell
+kubectl get pods -n aks-platform
+```
+**`Pods.png`**
+
+Vérifier le Service :
+
+```powershell
+kubectl get service -n aks-platform
+```
+**`Service.png`**
+
+Lister les ressources :
+
+```powershell
+kubectl get all -n aks-platform
+```
+**`KubernetesRessources.png`**
+
+---
+
+# 11. Vérifier le Deployment
+
+Le Deployment utilise l'image :
+
+```text
+clementaksterraform.azurecr.io/aks-platform:latest
+```
+
+et expose le port `8080`.
+
+Il contient également deux probes :
+
+```yaml
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+```
+
+Vérifier :
+
+```powershell
+kubectl describe deployment aks-platform -n aks-platform
+```
+
+
+**`Deployment.png`**
+
+---
+
+# 11.5. Vérifier la NetworkPolicy
+
+Le chart Helm contient également une **NetworkPolicy** permettant de contrôler les communications réseau des Pods.
+
+Vérifier la NetworkPolicy :
+
+```powershell
+kubectl get networkpolicy -n aks-platform
+```
+
+Pour obtenir plus de détails :
+
+```powershell
+kubectl describe networkpolicy aks-platform -n aks-platform
+```
+
+Cette vérification permet de confirmer que la politique réseau a bien été créée dans le namespace `aks-platform`.
+
+
+**`NetworkPolicy.png`**
+
+
+---
+
+
+# 12. Vérifier et tester le HPA
+
+Le chart Helm contient un **Horizontal Pod Autoscaler (HPA)**.
+
+Il permet à Kubernetes d'augmenter ou de diminuer automatiquement le nombre de Pods en fonction de l'utilisation CPU.
+
+## Vérifier la configuration
+
+```powershell
+kubectl get hpa -n aks-platform
+```
+
+Puis :
+
+```powershell
+kubectl describe hpa aks-platform -n aks-platform
+```
+
+La configuration est :
+
+```yaml
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPU: 70
+```
+
+Cela signifie que :
+
+* le Deployment possède au minimum **1 Pod** ;
+* il peut monter jusqu'à **3 Pods** ;
+* Kubernetes essaie de maintenir l'utilisation CPU autour de **70 %**.
+
+## Tester le scaling
+
+Pour tester le HPA, on peut générer temporairement de la charge CPU sur l'application.
+
+Dans un premier terminal, observer le HPA :
+
+```powershell
+kubectl get hpa -n aks-platform -w
+```
+
+Dans un deuxième terminal, observer les Pods :
+
+```powershell
+kubectl get pods -n aks-platform -w
+```
+
+Dans un troisième terminal, générer de la charge sur le Pod :
+
+```powershell
+kubectl run load-generator `
+  --rm -it `
+  --restart=Never `
+  --image=busybox `
+  -- /bin/sh
+```
+
+Une fois dans le conteneur :
+
+```sh
+while true; do wget -q -O- http://aks-platform.aks-platform.svc.cluster.local/health > /dev/null; done
+```
+
+La charge générée permet au HPA de détecter une augmentation de l'utilisation CPU.
+
+On peut alors observer l'évolution :
+
+```text
+1 replica
+   ↓
+CPU augmente
+   ↓
+HPA détecte le dépassement du seuil
+   ↓
+2 replicas
+   ↓
+CPU continue d'augmenter
+   ↓
+3 replicas maximum
+```
+
+Pour arrêter le test, utiliser :
+
+```text
+Ctrl+C
+```
+
+Puis quitter le conteneur :
+
+```sh
+exit
+```
+
+Le Pod `load-generator` étant lancé avec `--rm`, il est automatiquement supprimé après son arrêt.
+
+## Observer le retour à la normale
+
+Après l'arrêt de la charge, on peut continuer à observer :
+
+```powershell
+kubectl get hpa -n aks-platform -w
+```
+
+et :
+
+```powershell
+kubectl get pods -n aks-platform -w
+```
+
+Le nombre de replicas peut progressivement redescendre vers le minimum configuré.
+
+
+
+**`12-hpa-status.png`**
+
+Montrer :
+
+```powershell
+kubectl get hpa -n aks-platform
+```
+
+avec :
+
+* le nombre minimal de replicas ;
+* le nombre maximal ;
+* l'objectif CPU ;
+* le nombre actuel de replicas.
+
+**`13-hpa-scaling.png`**
+
+Montrer :
+
+```powershell
+kubectl get pods -n aks-platform
+```
+
+pendant le scaling, avec plusieurs Pods `Running`.
+
+Cette deuxième capture permet de montrer que le HPA n'est pas seulement configuré : **il a réellement déclenché la création de plusieurs Pods en réponse à la charge.**
+
+---
+
+# 12.5. Dashboard Grafana
+
+Grafana permet de visualiser les métriques de la plateforme Kubernetes sous forme de graphiques.
+
+Le dashboard permet notamment d'observer l'utilisation des ressources du cluster et des applications.
+
+
+**`grafana-screenshot.png`**
+
+
+
+---
+
+# 13. Azure Workload Identity
+
+L'application utilise un ServiceAccount Kubernetes dédié :
+
+```text
+aks-platform-workload
+```
+
+Vérifier :
+
+```powershell
+kubectl get serviceaccount aks-platform-workload `
+  -n aks-platform -o yaml
+```
+
+La partie importante est :
+
+```yaml
+annotations:
+  azure.workload.identity/client-id: <CLIENT_ID>
+```
+
+
+**`ServiceAccount.png`**
+
+
+---
+
+## Vérifier que le Deployment utilise le ServiceAccount
+
+```powershell
+kubectl get deployment aks-platform `
+  -n aks-platform -o yaml
+```
+
+
+```
+
+
+**`13-workload-identity-deployment.png`**
+
+
+---
+
+## Vérifier l'environnement du Pod
+
+Pour vérifier que l'injection liée à Workload Identity fonctionne :
+
+```powershell
+kubectl exec -n aks-platform deploy/aks-platform -- env |
+  Select-String "AZURE"
+```
+
+Selon la configuration et la version utilisée, les variables Azure injectées peuvent apparaître ici.
+
+### 📸 Capture
+
+**`14-workload-identity-env.png`**
+
+
+---
+
+# 14. Azure Key Vault
+
+Le projet utilise :
+
+```text
+kv-aks-terraform-dev
+```
+
+Vérifier l'existence du Key Vault :
+
+```powershell
+az keyvault show `
+  --name kv-aks-terraform-dev `
+  --resource-group rg-aks-terraform
+```
+
+Vérifier les role assignments :
+
+```powershell
+az role assignment list `
+  --scope "/subscriptions/<SUBSCRIPTION_ID>/resourceGroups/rg-aks-terraform/providers/Microsoft.KeyVault/vaults/kv-aks-terraform-dev" `
+  --assignee <IDENTITY_OBJECT_ID> `
+  -o table
+```
+
+
+**`RBAC-Permissions.png`**
+
+
+
+---
+
+# 15. Test Key Vault et problème RBAC rencontré
+
+Pendant le projet, un test de création de secret a initialement échoué :
+
+```powershell
+az keyvault secret set `
+  --vault-name kv-aks-terraform-dev `
+  --name test-secret `
+  --value "hello-from-key-vault"
+```
+
+Azure a retourné :
+
+```text
+ForbiddenByRbac
+Caller is not authorized to perform action on resource.
+Assignment: (not found)
+```
+
+Le problème venait des permissions RBAC.
+
+Après vérification et correction des role assignments, Terraform affichait ensuite :
+
+```text
+module.keyvault.azurerm_role_assignment.workload_secrets_user
+```
+
+dans le state.
+
+
+**`keyvault-rbac-error.png`**
+
+
+---
+
+# 16. Terraform State
+
+Le projet a été refondé afin de passer d'une infrastructure Terraform directement définie dans l'environnement à une architecture modulaire.
+
+Avant :
+
+**`AvantMigration.png`**
+
+
+Après :
+
+
+**`ApresMigration.png`**
+
+
+
+---
+
+# 17. Problème GitHub : fichier Terraform trop volumineux
+
+Lors du premier `git push`, GitHub a refusé le dépôt.
+
+Le problème venait de :
+
+```text
+terraform/environments/dev/.terraform/
+```
+
+qui contenait le provider AzureRM :
+
+```text
+terraform-provider-azurerm_v4.81.0_x5.exe
+```
+
+Sa taille était d'environ :
+
+```text
+238.60 MB
+```
+
+GitHub limite les fichiers classiques à :
+
+```text
+100 MB
+```
+
+Erreur :
+
+```text
+GH001: Large files detected
+```
+
+
+**`github-large-file-error.png`**
+
+
+---
+
+# 18. Correction du problème Git
+
+Les fichiers générés par Terraform ne doivent pas être versionnés.
+
+Le `.gitignore` contient notamment :
+
+```gitignore
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/crash.log
+terraform/crash.*.log
+terraform/*.tfvars
+terraform/*.tfvars.json
+terraform/terraform-state-backup.json
+```
+
+Cela permet d'éviter de pousser :
+
+* les providers Terraform téléchargés ;
+* les states locaux ;
+* les backups de state ;
+* les fichiers contenant potentiellement des valeurs sensibles ;
+* les fichiers générés automatiquement.
+
+Après correction :
+
+```powershell
+git status
+```
+
+puis :
+
+```powershell
+git add .
+git commit -m "Configure Terraform modules and Helm platform"
+git push
+```
+
+
+**`gitignore.png`**
+
+
+
+---
+
+# 19. Validation finale
+
+Une fois toutes les ressources configurées :
+
+```powershell
+cd terraform/environments/dev
+terraform plan
+```
+
+Résultat attendu :
+
+```text
+No changes. Your infrastructure matches the configuration.
+```
+
+Puis vérifier Kubernetes :
+
+```powershell
+kubectl get pods -n aks-platform
+```
+
+et :
+
+```powershell
+kubectl get all -n aks-platform
+```
+
+
+**`20-final-validation.png`**
+
+Cette capture peut idéalement montrer :
+
+```text
+terraform plan
+No changes.
+```
+
+et une seconde capture :
+
+```text
+kubectl get pods -n aks-platform
+```
+
+avec le Pod en `Running`.
+
+---
+
+# 20. Arrêter l'environnement pour économiser
+
+Le cluster AKS peut représenter une partie importante du coût du projet.
+
+Lorsque je ne travaille pas dessus, je peux arrêter le cluster :
+
+```powershell
+az aks stop `
+  --name aks-terraform-platform `
+  --resource-group rg-aks-terraform
+```
+
+Vérifier son état :
+
+```powershell
+az aks show `
+  --name aks-terraform-platform `
+  --resource-group rg-aks-terraform `
+  --query powerState
+```
+
+Pour reprendre le travail :
+
+```powershell
+az aks start `
+  --name aks-terraform-platform `
+  --resource-group rg-aks-terraform
+```
+
+Puis récupérer à nouveau les credentials si nécessaire :
+
+```powershell
+az aks get-credentials `
+  --resource-group rg-aks-terraform `
+  --name aks-terraform-platform `
+  --overwrite-existing
+```
+
+---
+
+# 21. Reproduire le projet depuis zéro
+
+Voici le workflow principal utilisé pour travailler sur le projet.
+
+## Étape 1 — Connexion Azure
+
+```powershell
+az login
+```
+
+```powershell
+az account show
+```
+
+---
+
+## Étape 2 — Terraform
+
+```powershell
+cd terraform/environments/dev
+```
+
+```powershell
+terraform init
+```
+
+```powershell
+terraform validate
+```
+
+```powershell
+terraform plan
+```
+
+Si le plan est correct :
+
+```powershell
 terraform apply
 ```
 
 ---
 
-## Récupérer les credentials AKS
+## Étape 3 — Connexion à AKS
 
-```bash
-az aks get-credentials \
-  --resource-group rg-aks-terraform \
-  --name aks-terraform-platform
+```powershell
+az aks get-credentials `
+  --resource-group rg-aks-terraform `
+  --name aks-terraform-platform `
+  --overwrite-existing
 ```
 
-Vérifier :
-
-```bash
+```powershell
 kubectl get nodes
 ```
 
 ---
 
-## Déployer Helm
+## Étape 4 — Déploiement Helm
 
-```bash
-helm upgrade --install aks-platform \
-  ./helm/aks-platform \
-  --namespace aks-platform \
+```powershell
+cd ..\..\..\helm\aks-platform
+```
+
+Vérifier le chart :
+
+```powershell
+helm lint .
+```
+
+Puis :
+
+```powershell
+helm upgrade --install aks-platform . `
+  --namespace aks-platform `
   --create-namespace
 ```
 
 ---
 
-## Vérifier l'application
+## Étape 5 — Vérifier l'application
 
-```bash
+```powershell
 kubectl get pods -n aks-platform
 ```
 
-```bash
-kubectl get svc -n aks-platform
+```powershell
+kubectl get service -n aks-platform
 ```
 
-```bash
+```powershell
 kubectl get ingress -n aks-platform
 ```
 
----
-
-# 📊 Accéder à Grafana
-
-Grafana peut être exposé temporairement avec un port-forward :
-
-```bash
-kubectl port-forward \
-  -n monitoring \
-  svc/monitoring-grafana \
-  3000:80
+```powershell
+kubectl get hpa -n aks-platform
 ```
 
-Puis :
+Pour regarder les logs :
+
+```powershell
+kubectl logs -n aks-platform deploy/aks-platform
+```
+
+Pour vérifier le Deployment :
+
+```powershell
+kubectl describe deployment aks-platform -n aks-platform
+```
+
+# 22. Problèmes rencontrés
+
+Ce projet m'a permis de rencontrer plusieurs problèmes réels lors de la mise en place de l'infrastructure et du déploiement. Ces problèmes m'ont surtout permis de comprendre les dépendances entre Terraform, Azure, Kubernetes et Helm.
+
+### Terraform
+
+* **Module Terraform non initialisé** : certains modules n'étaient pas encore correctement initialisés après la réorganisation du projet. J'ai dû réinitialiser Terraform avec `terraform init` afin de télécharger les dépendances et de prendre en compte la nouvelle architecture.
+
+* **Incompatibilité avec la version du provider AzureRM** : certains arguments utilisés dans les ressources Terraform n'étaient plus compatibles avec la version du provider utilisée. Cela m'a obligé à vérifier la documentation du provider et à adapter la configuration.
+
+* **Variable `tags` manquante** : une variable utilisée par les modules n'était pas correctement déclarée ou transmise. J'ai dû suivre le cheminement des variables entre l'environnement et les modules afin de corriger la configuration.
+
+* **Migration vers une architecture modulaire** : l'infrastructure était initialement définie directement dans l'environnement Terraform. J'ai ensuite séparé les ressources en plusieurs modules (`aks`, `acr`, `networking` et `keyvault`). Cette modification nécessitait de faire attention au Terraform State afin que Terraform reconnaisse les ressources existantes sans essayer de les recréer.
+
+* **Synchronisation du State avec Azure** : après plusieurs modifications, j'ai utilisé `terraform plan` pour vérifier que l'état décrit par Terraform correspondait bien à l'infrastructure réellement présente sur Azure. Le résultat final était :
+
+  ```text
+  No changes. Your infrastructure matches the configuration.
+  ```
+
+### Azure
+
+* **Permissions RBAC insuffisantes sur Key Vault** : lors d'un test de création d'un secret avec Azure CLI, Azure a retourné une erreur `ForbiddenByRbac`. Le compte utilisé n'avait pas les permissions nécessaires pour effectuer l'action `setSecret`.
+
+* **Propagation des role assignments** : après avoir ajouté ou modifié une permission RBAC, les changements ne sont pas toujours immédiatement visibles. J'ai dû vérifier les role assignments et prendre en compte le délai de propagation des permissions Azure.
+
+* **Configuration de Workload Identity** : la connexion entre Kubernetes et Azure nécessite plusieurs éléments qui doivent correspondre : le ServiceAccount Kubernetes, la Managed Identity, le `client-id` et le Federated Identity Credential. Une erreur dans l'un de ces éléments peut empêcher l'identité d'être correctement utilisée par le Pod.
+
+* **Managed Identity et Federated Identity Credential** : j'ai dû comprendre le rôle de la Managed Identity et du Federated Identity Credential pour permettre à un workload Kubernetes de s'authentifier auprès des services Azure sans stocker de secret directement dans le Pod.
+
+### Kubernetes / Helm
+
+* **Configuration du ServiceAccount** : l'application utilise un ServiceAccount Kubernetes dédié afin de pouvoir utiliser Azure Workload Identity. J'ai vérifié que le ServiceAccount était bien créé et associé au Deployment.
+
+* **Association du ServiceAccount au Deployment** : il ne suffisait pas de créer le ServiceAccount. Le Deployment devait également utiliser `aks-platform-workload` grâce à `serviceAccountName`.
+
+* **Configuration des probes** : le Deployment utilise une `readinessProbe` et une `livenessProbe` sur `/health`. Cela m'a permis de comprendre la différence entre vérifier si une application est prête à recevoir du trafic et vérifier si elle fonctionne toujours correctement.
+
+* **Configuration du HPA** : le Horizontal Pod Autoscaler devait être configuré avec un nombre minimum et maximum de replicas ainsi qu'un objectif CPU. J'ai également réalisé un test de charge pour vérifier que le nombre de Pods pouvait réellement augmenter.
+
+* **Déploiement et mise à jour avec Helm** : j'ai utilisé `helm install` puis `helm upgrade` pour déployer et mettre à jour l'application. Cela m'a permis de comprendre la notion de release Helm et la manière dont les templates deviennent des manifests Kubernetes.
+
+* **NetworkPolicy et ressources Kubernetes** : j'ai également vérifié que les différentes ressources créées par Helm étaient bien présentes dans le namespace `aks-platform`, notamment le Deployment, le Service, le HPA, l'Ingress, le ServiceAccount et la NetworkPolicy.
+
+### Git / GitHub
+
+* **Provider Terraform de plus de 100 MB** : lors du premier `git push`, GitHub a refusé le dépôt car le provider AzureRM téléchargé dans `.terraform/` faisait environ `238.60 MB`, alors que GitHub impose une limite de `100 MB` pour les fichiers classiques.
+
+* **Correction avec `.gitignore`** : j'ai identifié que les fichiers du dossier `.terraform/` n'avaient pas vocation à être versionnés. J'ai donc ajouté les fichiers générés par Terraform au `.gitignore`.
+
+* **Exclusion des states et fichiers potentiellement sensibles** : les fichiers `.tfstate`, `.tfvars` et autres fichiers générés ont également été exclus du dépôt afin d'éviter de publier des informations qui n'ont pas leur place dans Git.
+
+Ces problèmes m'ont permis de comprendre que la mise en place d'une infrastructure Cloud ne consiste pas uniquement à exécuter des commandes. Il faut comprendre les relations entre les différents composants, savoir lire les erreurs et identifier à quel niveau se situe le problème.
+
+J'ai notamment appris à distinguer les problèmes liés à **Terraform et son State**, ceux liés aux **permissions Azure**, ceux liés à la **configuration Kubernetes/Helm**, et ceux liés à la **gestion du code avec Git**. C'est également ce qui m'a permis de construire une plateforme plus reproductible et plus facile à maintenir.
+
+---
+
+# 23. Ce que j'ai appris
+
+Le projet m'a permis de mieux comprendre le lien entre :
 
 ```text
-http://localhost:3000
+Terraform
+   │
+   ▼
+Infrastructure Azure
+   │
+   ├── Networking
+   ├── AKS
+   ├── ACR
+   ├── Key Vault
+   └── Managed Identity
+          │
+          ▼
+      Kubernetes
+          │
+          └── Helm
 ```
+
+J'ai notamment appris à :
+
+* décrire une infrastructure avec Terraform ;
+* organiser Terraform avec des modules ;
+* gérer un state distant ;
+* déployer et administrer AKS ;
+* utiliser ACR avec Kubernetes ;
+* déployer une application avec Helm ;
+* utiliser Kubernetes ServiceAccounts ;
+* connecter Kubernetes à Azure grâce à Workload Identity ;
+* gérer les permissions avec Azure RBAC ;
+* diagnostiquer des erreurs Terraform, Azure et Kubernetes ;
+* éviter de versionner des fichiers sensibles ou générés ;
+* prendre en compte les coûts d'une infrastructure Cloud.
 
 ---
 
-# 🧹 Suppression de l'infrastructure
-
-Le projet étant destiné à être utilisé comme environnement de démonstration, l'infrastructure peut être supprimée après utilisation.
-
-Depuis le dossier Terraform :
-
-```bash
-terraform destroy
-```
-
-Cela permet d'éviter de laisser des ressources Azure actives inutilement.
-
----
-
-# 💰 Coûts
-
-Le projet utilise principalement des ressources Azure susceptibles d'être facturées selon l'utilisation.
-
-Pour éviter des coûts inutiles :
-
-```bash
-terraform destroy
-```
-
-peut être exécuté une fois la démonstration terminée.
-
-Les outils open source utilisés dans Kubernetes, tels que :
-
-* Kubernetes
-* Helm
-* Prometheus
-* Grafana
-* cert-manager
-* NGINX Ingress
-
-ne nécessitent pas d'abonnement logiciel payant.
-
-Cependant, **les ressources Azure sous-jacentes peuvent générer des coûts**.
-
----
-
-# 🎯 Compétences démontrées
-
-Ce projet permet de démontrer des compétences dans plusieurs domaines du Cloud Computing.
-
-### Cloud
+# 24. Technologies utilisées
 
 * Microsoft Azure
-* Azure Kubernetes Service
-* Azure Container Registry
-* Azure Networking
-* Azure Managed Identity
-
-### Infrastructure as Code
-
-* Terraform
-* AzureRM Provider
-* Infrastructure reproductible
-* Terraform state
-
-### Containers
-
-* Docker
-* Container Registry
-* Images versionnées
-
-### Kubernetes
-
-* Pods
-* Deployments
-* Services
-* Ingress
-* HPA
-* Namespaces
-* Service Accounts
-* RBAC
-
-### DevOps
-
-* GitHub Actions
-* CI/CD
-* Docker Build & Push
-* Automated Helm Deployment
-
-### Observabilité
-
-* Prometheus
-* Grafana
-* Alertmanager
-* Node Exporter
-* PromQL
-
-### Sécurité
-
-* GitHub Secrets
+* Azure Kubernetes Service (AKS)
+* Azure Container Registry (ACR)
+* Azure Key Vault
 * Azure RBAC
-* Managed Identity
-* Service Principal
-* cert-manager
-* TLS
+* Azure Workload Identity
+* Azure Virtual Network
+* Terraform
+* Kubernetes
+* Helm
+* PowerShell
+* Git
+* GitHub
+
+
 
 ---
 
+# 25. Captures d'écran du projet
 
-
-# 📌 Résumé
-
-Ce projet met en place une plateforme Kubernetes complète sur Azure en appliquant plusieurs pratiques modernes du Cloud et du DevOps.
-
-L'infrastructure est déclarée avec **Terraform**, l'application est conteneurisée avec **Docker**, les images sont stockées dans **Azure Container Registry**, le déploiement Kubernetes est géré avec **Helm**, l'accès HTTP est assuré par **NGINX Ingress**, l'autoscaling est assuré par **HPA**, et l'observabilité est réalisée avec **Prometheus et Grafana**.
-
-Le pipeline **GitHub Actions** automatise le cycle complet :
+Les captures sont stockées dans :
 
 ```text
-Developer
-    │
-    │ git push
-    ▼
-GitHub
-    │
-    ▼
-GitHub Actions
-    │
-    ├── Build Docker image
-    ├── Push image → ACR
-    ├── Authenticate → Azure
-    └── Deploy → Helm
-                  │
-                  ▼
-                 AKS
-                  │
-          ┌───────┼────────┐
-          ▼       ▼        ▼
-       Ingress   HPA    Monitoring
-          │       │        │
-          ▼       ▼        ▼
-       App Pods  Scaling  Grafana
+docs/screenshots/
 ```
 
-L'objectif principal du projet est de démontrer la capacité à **concevoir, déployer, automatiser, monitorer et maintenir une infrastructure Kubernetes Cloud complète**, tout en étant capable de diagnostiquer des problèmes réels de réseau, de permissions Azure, de Kubernetes et de CI/CD.

@@ -52,3 +52,17 @@ variable "max_count" {
   type    = number
   default = 2
 }
+variable "oidc_issuer_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "workload_identity_enabled" {
+  type    = bool
+  default = true
+}
+variable "tags" {
+  description = "Tags applied to AKS resources"
+  type        = map(string)
+  default     = {}
+}

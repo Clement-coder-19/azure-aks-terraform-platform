@@ -20,7 +20,10 @@ resource "azurerm_kubernetes_cluster" "main" {
         drain_timeout_in_minutes     = 0
         node_soak_duration_in_minutes = 0
     }
+    
 }
+  oidc_issuer_enabled       = var.oidc_issuer_enabled
+  workload_identity_enabled = var.workload_identity_enabled
 
   identity {
     type = "SystemAssigned"
@@ -36,4 +39,25 @@ resource "azurerm_kubernetes_cluster" "main" {
     service_cidr   = "10.1.0.0/16"
     dns_service_ip = "10.1.0.10"
   }
+  
+}
+resource "azurerm_user_assigned_identity" "workload" {
+  name                = "${var.name}-workload-identity"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  tags = var.tags
+}
+resource "azurerm_federated_identity_credential" "workload" {
+  name                = "${var.name}-federated"
+  resource_group_name = var.resource_group_name
+  parent_id           = azurerm_user_assigned_identity.workload.id
+
+  audience = [
+    "api://AzureADTokenExchange"
+  ]
+
+  issuer = azurerm_kubernetes_cluster.main.oidc_issuer_url
+
+  subject = "system:serviceaccount:aks-platform:aks-platform-workload"
 }
