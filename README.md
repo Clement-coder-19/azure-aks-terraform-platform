@@ -1198,7 +1198,7 @@ J'ai notamment appris à :
 Les captures sont stockées dans :
 
 ```text
-docs/screenshots/
+screenshots/
 
 ```
 ---
