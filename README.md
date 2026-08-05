@@ -60,11 +60,8 @@ Ce projet m'a permis de mettre en pratique :
                 Key Vault
 ```
 
-### 📸 Capture à ajouter ici
 
-**`01-architecture.png`**
 
-Une capture du schéma de l'architecture est idéale ici.
 
 ---
 
@@ -188,9 +185,13 @@ Résultat attendu :
 ```text
 Success! The configuration is valid.
 ```
+
 **`screenshots/TerraformValidate.png`**
 
+![Terraform Validate](screenshots/TerraformValidate.png)
+
 Cette capture montre que la configuration Terraform est valide avant de poursuivre le déploiement.
+
 ---
 
 ## Prévisualiser les changements
@@ -209,6 +210,8 @@ No changes. Your infrastructure matches the configuration.
 
 **`screenshots/TerraformPlan.png`**
 
+![Terraform Plan](screenshots/TerraformPlan.png)
+
 ---
 
 ## Déployer
@@ -224,6 +227,7 @@ Puis confirmer avec :
 ```text
 yes
 ```
+
 ## Vérifier les ressources Azure
 
 Le Resource Group permet de regrouper les différentes ressources utilisées par la plateforme.
@@ -236,10 +240,9 @@ az resource list `
 
 Cette commande permet de vérifier rapidement les ressources Azure créées par Terraform.
 
-
 **`screenshots/ResourceGroup.png`**
 
-
+![Resource Group](screenshots/ResourceGroup.png)
 
 ---
 
@@ -277,8 +280,10 @@ Vérifier la connexion :
 ```powershell
 kubectl get nodes
 ```
+
 **`screenshots/Nodes.png`**
 
+![AKS Nodes](screenshots/Nodes.png)
 
 Puis :
 
@@ -287,6 +292,8 @@ kubectl get pods -A
 ```
 
 **`screenshots/Pods.png`**
+
+![Kubernetes Pods](screenshots/Pods.png)
 
 Cette capture permet de montrer les Pods présents dans le cluster Kubernetes après la connexion à AKS.
 
@@ -318,9 +325,9 @@ L'image utilisée par Helm est :
 clementaksterraform.azurecr.io/aks-platform:latest
 ```
 
-
 **`screenshots/ACR.png`**
 
+![Azure Container Registry](screenshots/ACR.png)
 
 ---
 
@@ -378,41 +385,55 @@ helm list -n aks-platform
 
 **`screenshots/Helm.png`**
 
+![Helm Release](screenshots/Helm.png)
+
 **`screenshots/HelmStatus.png`**
 
+![Helm Status](screenshots/HelmStatus.png)
 
 ---
 
 # 10. Vérifier Kubernetes
-
 
 Vérifier le Deployment :
 
 ```powershell
 kubectl get deployment -n aks-platform
 ```
+
 **`screenshots/DeploymentGet.png`**
+
+![Deployment](screenshots/DeploymentGet.png)
 
 Vérifier les Pods :
 
 ```powershell
 kubectl get pods -n aks-platform
 ```
+
 **`screenshots/Pods.png`**
+
+![Pods](screenshots/Pods.png)
 
 Vérifier le Service :
 
 ```powershell
 kubectl get service -n aks-platform
 ```
+
 **`screenshots/Service.png`**
+
+![Service](screenshots/Service.png)
 
 Lister les ressources :
 
 ```powershell
 kubectl get all -n aks-platform
 ```
+
 **`screenshots/KubernetesRessources.png`**
+
+![Kubernetes Resources](screenshots/KubernetesRessources.png)
 
 ---
 
@@ -446,8 +467,9 @@ Vérifier :
 kubectl describe deployment aks-platform -n aks-platform
 ```
 
-
 **`screenshots/Deployment.png`**
+
+![Deployment Details](screenshots/Deployment.png)
 
 ---
 
@@ -469,12 +491,11 @@ kubectl describe networkpolicy aks-platform -n aks-platform
 
 Cette vérification permet de confirmer que la politique réseau a bien été créée dans le namespace `aks-platform`.
 
-
 **`screenshots/NetworkPolicy.png`**
 
+![Network Policy](screenshots/NetworkPolicy.png)
 
 ---
-
 
 # 12. Vérifier et tester le HPA
 
@@ -590,9 +611,9 @@ kubectl get pods -n aks-platform -w
 
 Le nombre de replicas peut progressivement redescendre vers le minimum configuré.
 
-
-
 **`12-hpa-status.png`**
+
+![HPA Status](screenshots/hpa-status.png)
 
 Montrer :
 
@@ -608,6 +629,8 @@ avec :
 * le nombre actuel de replicas.
 
 **`13-hpa-scaling.png`**
+
+![HPA Scaling](screenshots/hpa-scaling.png)
 
 Montrer :
 
@@ -627,10 +650,9 @@ Grafana permet de visualiser les métriques de la plateforme Kubernetes sous for
 
 Le dashboard permet notamment d'observer l'utilisation des ressources du cluster et des applications.
 
-
 **`grafana-screenshot.png`**
 
-
+![Grafana Dashboard](screenshots/grafana-screenshot.png)
 
 ---
 
@@ -656,9 +678,9 @@ annotations:
   azure.workload.identity/client-id: <CLIENT_ID>
 ```
 
-
 **`ServiceAccount.png`**
 
+![Service Account](screenshots/ServiceAccount.png)
 
 ---
 
@@ -669,12 +691,9 @@ kubectl get deployment aks-platform `
   -n aks-platform -o yaml
 ```
 
-
-```
-
-
 **`13-workload-identity-deployment.png`**
 
+![Workload Identity Deployment](screenshots/workload-identity-deployment.png)
 
 ---
 
@@ -689,9 +708,9 @@ kubectl exec -n aks-platform deploy/aks-platform -- env |
 
 Selon la configuration et la version utilisée, les variables Azure injectées peuvent apparaître ici.
 
-
 **`workload-identity-env.png`**
 
+![Workload Identity Environment](screenshots/workload-identity-env.png)
 
 ---
 
@@ -720,10 +739,9 @@ az role assignment list `
   -o table
 ```
 
-
 **`RBAC-Permissions.png`**
 
-
+![RBAC Permissions](screenshots/RBAC-Permissions.png)
 
 ---
 
@@ -756,27 +774,27 @@ module.keyvault.azurerm_role_assignment.workload_secrets_user
 
 dans le state.
 
-
 **`keyvault-rbac-error.png`**
 
+![Key Vault RBAC Error](screenshots/keyvault-rbac-error.png)
 
 ---
 
 # 16. Terraform State
 
-Le projet a été refondé afin de passer d'une infrastructure Terraform directement définie dans l'environnement à une architecture modulaire.
+Le projet a été refondu afin de passer d'une infrastructure Terraform directement définie dans l'environnement à une architecture modulaire.
 
 Avant :
 
 **`AvantMigration.png`**
 
+![Avant Migration](screenshots/AvantMigration.png)
 
 Après :
 
-
 **`ApresMigration.png`**
 
-
+![Après Migration](screenshots/ApresMigration.png)
 
 ---
 
@@ -814,9 +832,9 @@ Erreur :
 GH001: Large files detected
 ```
 
-
 **`github-large-file-error.png`**
 
+![GitHub Large File Error](screenshots/github-large-file-error.png)
 
 ---
 
@@ -859,10 +877,9 @@ git commit -m "Configure Terraform modules and Helm platform"
 git push
 ```
 
-
 **`gitignore.png`**
 
-
+![Gitignore](screenshots/gitignore.png)
 
 ---
 
@@ -892,7 +909,6 @@ et :
 ```powershell
 kubectl get all -n aks-platform
 ```
-
 
 **`20-final-validation.png`**
 
@@ -1175,8 +1191,6 @@ J'ai notamment appris à :
 * Git
 * GitHub
 
-
-
 ---
 
 # 25. Captures d'écran du projet
@@ -1186,4 +1200,3 @@ Les captures sont stockées dans :
 ```text
 docs/screenshots/
 ```
-
