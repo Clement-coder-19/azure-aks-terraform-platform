@@ -689,9 +689,8 @@ kubectl exec -n aks-platform deploy/aks-platform -- env |
 
 Selon la configuration et la version utilisée, les variables Azure injectées peuvent apparaître ici.
 
-### 📸 Capture
 
-**`14-workload-identity-env.png`**
+**`workload-identity-env.png`**
 
 
 ---
