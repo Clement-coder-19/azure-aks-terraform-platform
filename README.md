@@ -1200,3 +1200,9 @@ Les captures sont stockées dans :
 ```text
 docs/screenshots/
 ```
+# 26. License
+
+Ce projet est distribué sous licence MIT.
+
+Voir le fichier LICENSE pour le texte complet de la licence.
+
