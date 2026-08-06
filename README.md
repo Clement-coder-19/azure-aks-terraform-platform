@@ -242,9 +242,9 @@ az resource list `
 
 Cette commande permet de vérifier rapidement les ressources Azure créées par Terraform.
 
-**`screenshots/ResourceGroup.png`**
+**`screenshots/RessourceGroup.png`**
 
-![Resource Group](screenshots/ResourceGroup.png)
+![Resource Group](screenshots/RessourceGroup.png)
 
 ---
 
@@ -613,7 +613,7 @@ kubectl get pods -n aks-platform -w
 
 Le nombre de replicas peut progressivement redescendre vers le minimum configuré.
 
-**`hpa-status.png`**
+**`screenshots/hpa-status.png`**
 
 ![HPA Status](screenshots/hpa-status.png)
 
@@ -630,7 +630,7 @@ avec :
 * l'objectif CPU ;
 * le nombre actuel de replicas.
 
-**`hpa-scaling.png`**
+**`screenshots/hpa-scaling.png`**
 
 ![HPA Scaling](screenshots/hpa-scaling.png)
 
@@ -652,7 +652,7 @@ Grafana permet de visualiser les métriques de la plateforme Kubernetes sous for
 
 Le dashboard permet notamment d'observer l'utilisation des ressources du cluster et des applications.
 
-**`grafana-screenshot.png`**
+**`screenshots/grafana-screenshot.png`**
 
 ![Grafana Dashboard](screenshots/grafana-screenshot.png)
 
@@ -680,7 +680,7 @@ annotations:
   azure.workload.identity/client-id: <CLIENT_ID>
 ```
 
-**`ServiceAccount.png`**
+**`screenshots/ServiceAccount.png`**
 
 ![Service Account](screenshots/ServiceAccount.png)
 
@@ -693,7 +693,7 @@ kubectl get deployment aks-platform `
   -n aks-platform -o yaml
 ```
 
-**`13-workload-identity-deployment.png`**
+**`screenshots/workload-identity-deployment.png`**
 
 ![Workload Identity Deployment](screenshots/workload-identity-deployment.png)
 
@@ -710,7 +710,7 @@ kubectl exec -n aks-platform deploy/aks-platform -- env |
 
 Selon la configuration et la version utilisée, les variables Azure injectées peuvent apparaître ici.
 
-**`workload-identity-env.png`**
+**`screenshots/workload-identity-env.png`**
 
 ![Workload Identity Environment](screenshots/workload-identity-env.png)
 
@@ -741,7 +741,7 @@ az role assignment list `
   -o table
 ```
 
-**`RBAC-Permissions.png`**
+**`screenshots/RBAC-Permissions.png`**
 
 ![RBAC Permissions](screenshots/RBAC-Permissions.png)
 
@@ -776,7 +776,7 @@ module.keyvault.azurerm_role_assignment.workload_secrets_user
 
 dans le state.
 
-**`keyvault-rbac-error.png`**
+**`screenshots/keyvault-rbac-error.png`**
 
 ![Key Vault RBAC Error](screenshots/keyvault-rbac-error.png)
 
@@ -788,13 +788,13 @@ Le projet a été refondu afin de passer d'une infrastructure Terraform directem
 
 Avant :
 
-**`AvantMigration.png`**
+**`screenshots/AvantMigration.png`**
 
 ![Avant Migration](screenshots/AvantMigration.png)
 
 Après :
 
-**`ApresMigration.png`**
+**`screenshots/ApresMigration.png`**
 
 ![Après Migration](screenshots/ApresMigration.png)
 
@@ -834,7 +834,7 @@ Erreur :
 GH001: Large files detected
 ```
 
-**`github-large-file-error.png`**
+**`screenshots/github-large-file-error.png`**
 
 ![GitHub Large File Error](screenshots/github-large-file-error.png)
 
@@ -879,7 +879,7 @@ git commit -m "Configure Terraform modules and Helm platform"
 git push
 ```
 
-**`gitignore.png`**
+**`screenshots/gitignore.png`**
 
 ![Gitignore](screenshots/gitignore.png)
 
@@ -912,22 +912,12 @@ et :
 kubectl get all -n aks-platform
 ```
 
-**`final-validation.png`**
+**`screenshots/TerraformPlan.png`**
+![Terraform Plan](screenshots/TerraformPlan.png)
 
-Cette capture peut idéalement montrer :
+**`screenshots/KubernetesRessources.png`**
 
-```text
-terraform plan
-No changes.
-```
-
-et une seconde capture :
-
-```text
-kubectl get pods -n aks-platform
-```
-
-avec le Pod en `Running`.
+![Kubernetes Resources](screenshots/KubernetesRessources.png)
 
 ---
 
