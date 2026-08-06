@@ -61,7 +61,9 @@ Ce projet m'a permis de mettre en pratique :
 ```
 
 
+**`screenshots/Architecture.png`**
 
+![Architecture](screenshots/Architecture.png)
 
 ---
 
