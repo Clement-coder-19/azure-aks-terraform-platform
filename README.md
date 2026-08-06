@@ -475,7 +475,7 @@ kubectl describe deployment aks-platform -n aks-platform
 
 ---
 
-# 11.5. Vérifier la NetworkPolicy
+# 12. Vérifier la NetworkPolicy
 
 Le chart Helm contient également une **NetworkPolicy** permettant de contrôler les communications réseau des Pods.
 
@@ -499,7 +499,7 @@ Cette vérification permet de confirmer que la politique réseau a bien été cr
 
 ---
 
-# 12. Vérifier et tester le HPA
+# 13. Vérifier et tester le HPA
 
 Le chart Helm contient un **Horizontal Pod Autoscaler (HPA)**.
 
@@ -613,7 +613,7 @@ kubectl get pods -n aks-platform -w
 
 Le nombre de replicas peut progressivement redescendre vers le minimum configuré.
 
-**`12-hpa-status.png`**
+**`hpa-status.png`**
 
 ![HPA Status](screenshots/hpa-status.png)
 
@@ -630,7 +630,7 @@ avec :
 * l'objectif CPU ;
 * le nombre actuel de replicas.
 
-**`13-hpa-scaling.png`**
+**`hpa-scaling.png`**
 
 ![HPA Scaling](screenshots/hpa-scaling.png)
 
@@ -646,7 +646,7 @@ Cette deuxième capture permet de montrer que le HPA n'est pas seulement configu
 
 ---
 
-# 12.5. Dashboard Grafana
+# 14. Dashboard Grafana
 
 Grafana permet de visualiser les métriques de la plateforme Kubernetes sous forme de graphiques.
 
@@ -658,7 +658,7 @@ Le dashboard permet notamment d'observer l'utilisation des ressources du cluster
 
 ---
 
-# 13. Azure Workload Identity
+# 15. Azure Workload Identity
 
 L'application utilise un ServiceAccount Kubernetes dédié :
 
@@ -716,7 +716,7 @@ Selon la configuration et la version utilisée, les variables Azure injectées p
 
 ---
 
-# 14. Azure Key Vault
+# 16. Azure Key Vault
 
 Le projet utilise :
 
@@ -747,7 +747,7 @@ az role assignment list `
 
 ---
 
-# 15. Test Key Vault et problème RBAC rencontré
+# 17. Test Key Vault et problème RBAC rencontré
 
 Pendant le projet, un test de création de secret a initialement échoué :
 
@@ -782,7 +782,7 @@ dans le state.
 
 ---
 
-# 16. Terraform State
+# 18. Terraform State
 
 Le projet a été refondu afin de passer d'une infrastructure Terraform directement définie dans l'environnement à une architecture modulaire.
 
@@ -800,7 +800,7 @@ Après :
 
 ---
 
-# 17. Problème GitHub : fichier Terraform trop volumineux
+# 19. Problème GitHub : fichier Terraform trop volumineux
 
 Lors du premier `git push`, GitHub a refusé le dépôt.
 
@@ -840,7 +840,7 @@ GH001: Large files detected
 
 ---
 
-# 18. Correction du problème Git
+# 20. Correction du problème Git
 
 Les fichiers générés par Terraform ne doivent pas être versionnés.
 
@@ -885,7 +885,7 @@ git push
 
 ---
 
-# 19. Validation finale
+# 21. Validation finale
 
 Une fois toutes les ressources configurées :
 
@@ -912,7 +912,7 @@ et :
 kubectl get all -n aks-platform
 ```
 
-**`20-final-validation.png`**
+**`final-validation.png`**
 
 Cette capture peut idéalement montrer :
 
@@ -931,7 +931,7 @@ avec le Pod en `Running`.
 
 ---
 
-# 20. Arrêter l'environnement pour économiser
+# 22. Arrêter l'environnement pour économiser
 
 Le cluster AKS peut représenter une partie importante du coût du projet.
 
@@ -971,7 +971,7 @@ az aks get-credentials `
 
 ---
 
-# 21. Reproduire le projet depuis zéro
+# 23. Reproduire le projet depuis zéro
 
 Voici le workflow principal utilisé pour travailler sur le projet.
 
@@ -1080,7 +1080,7 @@ Pour vérifier le Deployment :
 kubectl describe deployment aks-platform -n aks-platform
 ```
 
-# 22. Problèmes rencontrés
+# 24. Problèmes rencontrés
 
 Ce projet m'a permis de rencontrer plusieurs problèmes réels lors de la mise en place de l'infrastructure et du déploiement. Ces problèmes m'ont surtout permis de comprendre les dépendances entre Terraform, Azure, Kubernetes et Helm.
 
@@ -1138,7 +1138,7 @@ J'ai notamment appris à distinguer les problèmes liés à **Terraform et son S
 
 ---
 
-# 23. Ce que j'ai appris
+# 25. Ce que j'ai appris
 
 Le projet m'a permis de mieux comprendre le lien entre :
 
@@ -1177,7 +1177,7 @@ J'ai notamment appris à :
 
 ---
 
-# 24. Technologies utilisées
+# 26. Technologies utilisées
 
 * Microsoft Azure
 * Azure Kubernetes Service (AKS)
@@ -1195,7 +1195,7 @@ J'ai notamment appris à :
 
 ---
 
-# 25. Captures d'écran du projet
+# 27. Captures d'écran du projet
 
 Les captures sont stockées dans :
 
@@ -1204,7 +1204,7 @@ screenshots/
 
 ```
 ---
-# 26. Gestion des ressources Azure
+# 28. Gestion des ressources Azure
 
 Après la réalisation et la validation du projet, les ressources Azure utilisées pour les tests ont été supprimées afin d'éviter toute consommation inutile de crédits.
 Avant leur suppression, l'infrastructure était bien déployée dans le Resource Group rg-aks-terraform.
@@ -1225,7 +1225,7 @@ terraform apply
 
 ---
 
-# 27. License
+# 29. License
 
 Ce projet est distribué sous licence MIT.
 
