@@ -1205,7 +1205,17 @@ Avant leur suppression, l'infrastructure était bien déployée dans le Resource
 
 Cette capture montre les ressources Azure utilisées par la plateforme avant leur destruction.
 
-Le code Terraform permet néanmoins de reproduire l'infrastructure ultérieurement avec :
+### Précision sur le Terraform Remote State
+
+Le projet a été configuré avec un backend Azure Storage afin de stocker le Terraform State à distance pendant la phase de déploiement.
+
+Le Storage Account utilisé pour le Remote State a ensuite été supprimé avec les autres ressources Azure à la fin des tests, afin d'éviter toute consommation inutile de crédits.
+
+La configuration du backend est conservée dans le code afin de documenter l'architecture utilisée pendant le projet et de faciliter sa reconfiguration lors d'un futur déploiement.
+
+Lors d'une nouvelle utilisation du projet, le backend devra être recréé ou adapté avant l'exécution de `terraform init`.
+
+Le code Terraform permet ensuite de reproduire l'infrastructure ultérieurement avec :
 
 ```powershell
 terraform init
@@ -1214,8 +1224,28 @@ terraform apply
 ```
 
 ---
+### 29. État actuel de l'infrastructure
 
-# 29. License
+L'infrastructure Azure a été déployée et validée dans le cadre du projet, puis supprimée après les tests afin d'éviter les coûts liés aux ressources cloud.
+
+Le code Terraform reste entièrement disponible dans le dépôt et permet de recréer l'infrastructure ultérieurement.
+
+À l'état actuel, aucune infrastructure AKS n'est active sur Azure pour ce projet.
+
+Les ressources Azure principales utilisées pendant le projet étaient notamment :
+
+* Azure Kubernetes Service (AKS)
+* Azure Container Registry (ACR)
+* Azure Key Vault
+* Azure Virtual Network
+* Managed Identity
+* Ressources réseau associées à AKS
+
+Cette approche permet de conserver un projet reproductible tout en évitant de maintenir une infrastructure Azure active en permanence.
+
+---
+
+# 30. License
 
 Ce projet est distribué sous licence MIT.
 
